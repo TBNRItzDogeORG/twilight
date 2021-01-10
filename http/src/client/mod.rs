@@ -1435,6 +1435,7 @@ impl Client {
     ///
     /// Returns [`Error::Unauthorized`] if the configured token has become
     /// invalid due to expiration, revokation, etc.
+    #[allow(clippy)]
     pub async fn raw(&self, request: Request) -> Result<Response<Body>> {
         if self.state.token_invalid.load(Ordering::Relaxed) {
             return Err(Error::Unauthorized);
@@ -1477,17 +1478,17 @@ impl Client {
         ));
         builder = builder.header(USER_AGENT, user_agent);
 
-        if let Some(default_headers) = &self.state.default_headers {
-            for (name, value) in default_headers {
-                builder = builder.header(name, value);
-            }
-        }
-
         if let Some(req_headers) = req_headers {
             for (maybe_name, value) in req_headers {
                 if let Some(name) = maybe_name {
                     builder = builder.header(name, value);
                 }
+            }
+        }
+
+        if let Some(default_headers) = &self.state.default_headers {
+            for (name, value) in default_headers {
+                builder = builder.header(name, value);
             }
         }
 
